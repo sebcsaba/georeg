@@ -1,0 +1,3 @@
+[submodule "webroot/abavee"]
+	path = webroot/abavee
+	url = https://github.com/sebcsaba/abavee.git
