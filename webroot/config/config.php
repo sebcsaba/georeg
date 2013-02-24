@@ -9,6 +9,7 @@ return config_merge(array(
 			'EventLoadService' => 'EventLoadServiceImpl',
 			'EventAdminService' => 'EventAdminServiceImpl',
 			'ParticipantAdminService' => 'ParticipantAdminServiceImpl',
+			'ParticipantLoadService' => 'ParticipantLoadServiceImpl',
 		),
 		'nonsingletons' => array(
 		),
