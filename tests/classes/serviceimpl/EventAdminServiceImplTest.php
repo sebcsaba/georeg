@@ -53,9 +53,29 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 */
 	public function updateClosedRegistrationEventAsAdminUser() {
-		$testdata = array("UPDATE event SET name='geo2updated', event_date='2030-12-01 00:00:00', registration_end='2013-12-03 00:00:00', international=0 WHERE (id=2)" => true);
+		$testdata = array(
+			"SELECT event_date FROM event WHERE (id=2)"=>array(array('event_date'=>$this->geo2['event_date'])),
+			"UPDATE event SET name='geo2updated', event_date='2030-12-01 00:00:00', registration_end='2013-12-03 00:00:00', international=0 WHERE (id=2)" => true,
+		);
 		$db = TestDbEngine::createDatabase($this, $testdata);
 		$event = $this->createEvent($this->geo2);
+		$newEvent = new Event($event->getId(),
+			$event->getName().'updated',
+			$event->getEventDate(),
+			$event->getRegistrationEnd(),
+			$event->getInternational());
+		$impl = new EventAdminServiceImpl($db);
+		$impl->updateEvent($this->userAdmin, $newEvent);
+	}
+	
+	/**
+	 * @test
+	 * @expectedException DataAccessException
+	 */
+	public function updateClosedEventAsAdminUser() {
+		$testdata = array("SELECT event_date FROM event WHERE (id=1)"=>array(array('event_date'=>$this->geo1['event_date'])));
+		$db = TestDbEngine::createDatabase($this, $testdata);
+		$event = $this->createEvent($this->geo1);
 		$newEvent = new Event($event->getId(),
 			$event->getName().'updated',
 			$event->getEventDate(),

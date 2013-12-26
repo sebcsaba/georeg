@@ -37,6 +37,13 @@ class EventAdminServiceImpl extends DbServiceBase implements EventAdminService {
 		if (!$user->isAdmin()) {
 			throw new DataAccessException('only admin can update event');
 		}
+		$eventOriginalDate = Timestamp::parse($this->db->queryCell(QueryBuilder::create()
+			->from('event')
+			->where('id=?', $event->getId())
+			->select('event_date')));
+		if ($eventOriginalDate->isBefore(new Timestamp())) {
+			throw new DataAccessException('cannot update a closed event');
+		}
 		$stmt = UpdateBuilder::create()
 			->update('event')
 			->set('name', $event->getName())
