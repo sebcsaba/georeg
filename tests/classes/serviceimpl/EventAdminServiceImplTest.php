@@ -5,38 +5,34 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	/**
 	 * @test
 	 */
-	public function createEventForAdmin() {
-		$testdata = array("INSERT INTO event ( name, event_date, registration_end, international )  VALUES ( 'geo13', '2030-12-29 00:00:00', '2030-12-31 00:00:00', 1 ) " => 13);
+	public function createEventAsAdminUser() {
+		$testdata = array("INSERT INTO event ( name, event_date, registration_end, international )  VALUES ( 'geo3', '2030-12-31 00:00:00', '2030-12-30 00:00:00', 0 ) " => 3);
 		$db = TestDbEngine::createDatabase($this, $testdata);
 		$impl = new EventAdminServiceImpl($db);
-		$event = new Event(null, 'geo13', Timestamp::parse('2030-12-29'), Timestamp::parse('2030-12-31'), true);
+		$event = $this->createEvent($this->geo3);
 		$id = $impl->createEvent($this->userAdmin, $event);
-		$this->assertEquals(13, $id);
+		$this->assertEquals(3, $id);
 	}
 	
 	/**
 	 * @test
 	 * @expectedException DataAccessException
 	 */
-	public function createEventForNonAdmin() {
+	public function createEventAsNormalUser() {
 		$testdata = array();
 		$db = TestDbEngine::createDatabase($this, $testdata);
 		$impl = new EventAdminServiceImpl($db);
-		$event = new Event(null, 'geo13', Timestamp::parse('2030-12-29'), Timestamp::parse('2030-12-31'), true);
+		$event = $this->createEvent($this->geo3);
 		$impl->createEvent($this->userNormal, $event);
 	}
 	
 	/**
 	 * @test
 	 */
-	public function removeEventForAdmin() {
-		$testdata = array(
-			'SELECT * FROM event WHERE (id=1) ORDER BY event_date DESC' => array($this->geo1),
-			'DELETE FROM event WHERE (id=1)' => true,
-		);
+	public function removeEventAsAdminUser() {
+		$testdata = array('DELETE FROM event WHERE (id=1)' => true);
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$loader = new EventLoadServiceImpl($db);
-		$event = $loader->load($this->userAdmin, 1);
+		$event = $this->createEvent($this->geo1);
 		$impl = new EventAdminServiceImpl($db);
 		$impl->removeEvent($this->userAdmin, $event);
 	}
@@ -45,11 +41,10 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 * @expectedException DataAccessException
 	 */
-	public function removeEventForNonAdmin() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=1) ORDER BY event_date DESC' => array($this->geo1));
+	public function removeEventAsNormalUser() {
+		$testdata = array();
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$loader = new EventLoadServiceImpl($db);
-		$event = $loader->load($this->userNormal, 1);
+		$event = $this->createEvent($this->geo1);
 		$impl = new EventAdminServiceImpl($db);
 		$impl->removeEvent($this->userNormal, $event);
 	}
@@ -57,14 +52,10 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	/**
 	 * @test
 	 */
-	public function updateEventForAdmin() {
-		$testdata = array(
-			'SELECT * FROM event WHERE (id=1) ORDER BY event_date DESC' => array($this->geo1),
-			"UPDATE event SET name='geo1updated', event_date='2013-12-02 00:00:00', registration_end='2013-12-01 00:00:00', international=0 WHERE (id=1)" => true,
-		);
+	public function updateClosedRegistrationEventAsAdminUser() {
+		$testdata = array("UPDATE event SET name='geo2updated', event_date='2030-12-01 00:00:00', registration_end='2013-12-03 00:00:00', international=0 WHERE (id=2)" => true);
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$loader = new EventLoadServiceImpl($db);
-		$event = $loader->load($this->userAdmin, 1);
+		$event = $this->createEvent($this->geo2);
 		$newEvent = new Event($event->getId(),
 			$event->getName().'updated',
 			$event->getEventDate(),
@@ -78,13 +69,10 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 * @expectedException DataAccessException
 	 */
-	public function updateEventForNonAdmin() {
-		$testdata = array(
-			'SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=1) ORDER BY event_date DESC' => array($this->geo1),
-		);
+	public function updateEventAsNormalUser() {
+		$testdata = array();
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$loader = new EventLoadServiceImpl($db);
-		$event = $loader->load($this->userNormal, 1);
+		$event = $this->createEvent($this->geo1);
 		$newEvent = new Event($event->getId(),
 			$event->getName().'updated',
 			$event->getEventDate(),
