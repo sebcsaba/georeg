@@ -14,6 +14,9 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 	 */
 	public function createParticipant(GeoUser $user, Participant $participant) {
 		if ($participant->getEvent()->getEventDate()->isBefore(new Timestamp())) {
+			throw new DataAccessException('the event is closed');
+		}
+		if (!$user->isAdmin() && $participant->getEvent()->getRegistrationEnd()->isBefore(new Timestamp())) {
 			throw new DataAccessException('the registration period is over');
 		}
 		$stmt = InsertBuilder::create()
@@ -30,7 +33,7 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 		$upd = UpdateBuilder::create()
 			->update('participant')
 			->where('id=?', $participantId);
-		$this->insertPlayersForParticipant($participant, $upd);
+		$this->insertPlayersForParticipant($participant, $participantId, $upd);
 		$this->db->exec($upd);
 		return $participantId;
 	}
@@ -47,6 +50,9 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 		if (!$user->isAdmin()) {
 			throw new DataAccessException('only admin can update a participant');
 		}
+		if ($participant->getEvent()->getEventDate()->isBefore(new Timestamp())) {
+			throw new DataAccessException('the event is closed');
+		}
 		$this->removePlayerReferences($participant);
 		$existingPlayerIds = $this->collectNotNullPlayedIds($participant->getPlayers());
 		$delPl = DeleteBuilder::create()
@@ -62,8 +68,8 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 			->set('country', $participant->getCountry())
 			->set('additional_guests', $participant->getAdditionalGuests())
 			->set('comment', $participant->getComment())
-			->where('id=?', $participantId);
-		$this->insertPlayersForParticipant($participant, $upd);
+			->where('id=?', $participant->getId());
+		$this->insertPlayersForParticipant($participant, $participant->getId(), $upd);
 		$this->db->exec($upd);
 	}
 	
@@ -78,6 +84,9 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 	public function removeParticipant(GeoUser $user, Participant $participant) {
 		if (!$user->isAdmin()) {
 			throw new DataAccessException('only admin can remove a participant');
+		}
+		if ($participant->getEvent()->getEventDate()->isBefore(new Timestamp())) {
+			throw new DataAccessException('the event is closed');
 		}
 		$this->removePlayerReferences($participant);
 		$delPl = DeleteBuilder::create()
@@ -96,15 +105,16 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 	 * 
 	 * @param Player $player
 	 * @param Participant $participant
+	 * @param integer $participantId
 	 * @return integer The id of the new player
 	 */
-	private function insertPlayer(Player $player, Participant $participant) {
+	private function insertPlayer(Player $player, Participant $participant, $participantId) {
 		if (!is_null($player->getId())) {
 			return $player->getId();
 		}
 		$stmt = InsertBuilder::create()
 			->into('player')
-			->set('fk_participant', $participant->getId())
+			->set('fk_participant', $participantId)
 			->set('name', $player->getName())
 			->set('email', $player->getEmail())
 			->set('phone', $player->getPhone());
@@ -117,11 +127,12 @@ class ParticipantAdminServiceImpl extends DbServiceBase implements ParticipantAd
 	 * - sets it's id to the given driver, etc. fields in the update buidler
 	 * 
 	 * @param Participant $participant
+	 * @param integer $participantId
 	 * @param UpdateBuilder $upd
 	 */
-	private function insertPlayersForParticipant(Participant $participant, UpdateBuilder $upd) {
+	private function insertPlayersForParticipant(Participant $participant, $participantId, UpdateBuilder $upd) {
 		foreach ($participant->getPlayers() as $player) {
-			$plid = $this->insertPlayer($player, $participant);
+			$plid = $this->insertPlayer($player, $participant, $participantId);
 			if ($player == $participant->getDriver()) {
 				$upd->set('fk_driver', $plid);
 			}
