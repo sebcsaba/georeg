@@ -1,24 +1,7 @@
 <?php
 
-class EventLoadServiceImplTest extends PHPUnit_Framework_TestCase {
+class EventLoadServiceImplTest extends ServiceImplTestBase {
 
-	// event is closed
-	private $geo1 = array('id'=>1, 'name'=>'geo1', 'event_date'=>'2013-12-02', 'registration_end'=>'2013-12-01', 'international'=>0);
-	
-	// event is open, registration is closed
-	private $geo2 = array('id'=>2, 'name'=>'geo2', 'event_date'=>'2030-12-01', 'registration_end'=>'2013-12-03', 'international'=>0);
-	
-	// registration is open
-	private $geo3 = array('id'=>3, 'name'=>'geo3', 'event_date'=>'2030-12-31', 'registration_end'=>'2030-12-30', 'international'=>0);
-	
-	private $userAdmin;
-	private $userNormal;
-	
-	public function setUp() {
-		$this->userAdmin = new GeoUser(1, 'admin', true);
-		$this->userNormal = new GeoUser(2, 'normal', false);
-	}
-	
 	/**
 	 * @test
 	 */

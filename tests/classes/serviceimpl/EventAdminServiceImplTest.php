@@ -1,16 +1,6 @@
 <?php
 
-class EventAdminServiceImplTest extends PHPUnit_Framework_TestCase {
-	
-	private $geo1 = array('id'=>1, 'name'=>'geo1', 'event_date'=>'2013-12-02', 'registration_end'=>'2013-12-01', 'international'=>0);
-	
-	private $userAdmin;
-	private $userNormal;
-	
-	public function setUp() {
-		$this->userAdmin = new GeoUser(1, 'admin', true);
-		$this->userNormal = new GeoUser(2, 'normal', false);
-	}
+class EventAdminServiceImplTest extends ServiceImplTestBase {
 	
 	/**
 	 * @test
