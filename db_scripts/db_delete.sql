@@ -1,0 +1,3 @@
+DROP TABLE event CASCADE;
+DROP TABLE participant CASCADE;
+DROP TABLE player CASCADE;
