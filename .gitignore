@@ -1,1 +1,3 @@
 .settings
+webroot/config/config.local.php
+webroot/temp
