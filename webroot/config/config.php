@@ -10,6 +10,11 @@ return config_merge(array(
 			'EventAdminService' => 'EventAdminServiceImpl',
 			'ParticipantAdminService' => 'ParticipantAdminServiceImpl',
 			'ParticipantLoadService' => 'ParticipantLoadServiceImpl',
+			
+			'EventLoadDaoService' => 'EventLoadDaoServiceImpl',
+			'EventAdminDaoService' => 'EventAdminDaoServiceImpl',
+			'ParticipantLoadDaoService' => 'ParticipantLoadDaoServiceImpl',
+			'ParticipantAdminDaoService' => 'ParticipantAdminDaoServiceImpl',
 		),
 		'nonsingletons' => array(
 		),
