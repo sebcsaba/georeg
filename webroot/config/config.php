@@ -15,6 +15,9 @@ return config_merge(array(
 			'EventAdminDaoService' => 'EventAdminDaoServiceImpl',
 			'ParticipantLoadDaoService' => 'ParticipantLoadDaoServiceImpl',
 			'ParticipantAdminDaoService' => 'ParticipantAdminDaoServiceImpl',
+			
+			'EventAuthService' => 'EventAuthServiceImpl',
+			'ParticipantAuthService' => 'ParticipantAuthServiceImpl',
 		),
 		'nonsingletons' => array(
 		),

@@ -90,4 +90,22 @@ class Event {
 		return $this->international;
 	}
 	
+	/**
+	 * True, if the event date if after the current time
+	 * 
+	 * @return boolean
+	 */
+	public function isEventOpen() {
+		return $this->getEventDate()->isAfter(new Timestamp());
+	}
+	
+	/**
+	 * True, if the registration end date if after the current time
+	 * 
+	 * @return boolean
+	 */
+	public function isRegistrationOpen() {
+		return $this->getRegistrationEnd()->isAfter(new Timestamp());
+	}
+	
 }
