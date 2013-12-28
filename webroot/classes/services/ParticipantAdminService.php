@@ -10,7 +10,7 @@ interface ParticipantAdminService {
 	 * @param GeoUser $user
 	 * @param Participant $participant
 	 * @return int
-	 * @throws Exception
+	 * @throws DataAccessException
 	 */
 	public function createParticipant(GeoUser $user, Participant $participant);
 	
@@ -20,7 +20,7 @@ interface ParticipantAdminService {
 	 * 
 	 * @param GeoUser $user
 	 * @param Participant $participant
-	 * @throws Exception
+	 * @throws DataAccessException
 	 */
 	public function updateParticipant(GeoUser $user, Participant $participant);
 	
@@ -30,7 +30,7 @@ interface ParticipantAdminService {
 	 * 
 	 * @param GeoUser $user
 	 * @param Participant $participant
-	 * @throws Exception
+	 * @throws DataAccessException
 	 */
 	public function removeParticipant(GeoUser $user, Participant $participant);
 	

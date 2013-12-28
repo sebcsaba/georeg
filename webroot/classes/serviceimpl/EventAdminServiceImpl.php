@@ -1,6 +1,21 @@
 <?php
 
-class EventAdminServiceImpl extends DbServiceBase implements EventAdminService {
+class EventAdminServiceImpl implements EventAdminService {
+	
+	/**
+	 * @var EventAuthService
+	 */
+	private $eventAuthService;
+	
+	/**
+	 * @var EventAdminDaoService
+	 */
+	private $eventAdminDaoService;
+	
+	public function __construct(EventAuthService $eventAuthService, EventAdminDaoService $eventAdminDaoService) {
+		$this->eventAuthService = $eventAuthService;
+		$this->eventAdminDaoService = $eventAdminDaoService;
+	}
 	
 	/**
 	 * Creates a new event.
@@ -13,16 +28,10 @@ class EventAdminServiceImpl extends DbServiceBase implements EventAdminService {
 	 * @throws Exception
 	 */
 	public function createEvent(GeoUser $user, Event $event) {
-		if (!$user->isAdmin()) {
-			throw new DataAccessException('only admin can create event');
+		if (!$this->eventAuthService->canCreateEvent($user)) {
+			throw new DataAccessException('cannot create event');
 		}
-		$stmt = InsertBuilder::create()
-			->into('event')
-			->set('name', $event->getName())
-			->set('event_date', $event->getEventDate())
-			->set('registration_end', $event->getRegistrationEnd())
-			->set('international', $event->getInternational());
-		return $this->db->insert($stmt);
+		return $this->eventAdminDaoService->createEvent($event);
 	}
 	
 	/**
@@ -34,24 +43,10 @@ class EventAdminServiceImpl extends DbServiceBase implements EventAdminService {
 	 * @throws Exception
 	 */
 	public function updateEvent(GeoUser $user, Event $event) {
-		if (!$user->isAdmin()) {
-			throw new DataAccessException('only admin can update event');
+		if (!$this->eventAuthService->canUpdateEvent($user, $event)) {
+			throw new DataAccessException('cannot update event');
 		}
-		$eventOriginalDate = Timestamp::parse($this->db->queryCell(QueryBuilder::create()
-			->from('event')
-			->where('id=?', $event->getId())
-			->select('event_date')));
-		if ($eventOriginalDate->isBefore(new Timestamp())) {
-			throw new DataAccessException('cannot update a closed event');
-		}
-		$stmt = UpdateBuilder::create()
-			->update('event')
-			->set('name', $event->getName())
-			->set('event_date', $event->getEventDate())
-			->set('registration_end', $event->getRegistrationEnd())
-			->set('international', $event->getInternational())
-			->where('id=?', $event->getId());
-		$this->db->exec($stmt);
+		$this->eventAdminDaoService->updateEvent($event);
 	}
 	
 	/**
@@ -63,13 +58,10 @@ class EventAdminServiceImpl extends DbServiceBase implements EventAdminService {
 	 * @throws Exception
 	 */
 	public function removeEvent(GeoUser $user, Event $event) {
-		if (!$user->isAdmin()) {
-			throw new DataAccessException('only admin can remove event');
+		if (!$this->eventAuthService->canRemoveEvent($user, $event)) {
+			throw new DataAccessException('cannot remove event');
 		}
-		$stmt = DeleteBuilder::create()
-			->from('event')
-			->where('id=?', $event->getId());
-		$this->db->exec($stmt);
+		$this->eventAdminDaoService->removeEvent($event);
 	}
 	
 }

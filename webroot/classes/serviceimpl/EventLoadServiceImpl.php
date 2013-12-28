@@ -1,6 +1,21 @@
 <?php
 
-class EventLoadServiceImpl extends DbServiceBase implements EventLoadService {
+class EventLoadServiceImpl implements EventLoadService {
+	
+	/**
+	 * @var EventAuthService
+	 */
+	private $eventAuthService;
+	
+	/**
+	 * @var EventLoadDaoService
+	 */
+	private $eventLoadDaoService;
+	
+	public function __construct(EventAuthService $eventAuthService, EventLoadDaoService $eventLoadDaoService) {
+		$this->eventAuthService = $eventAuthService;
+		$this->eventLoadDaoService = $eventLoadDaoService;
+	}
 	
 	/**
 	 * Lists the events visible for the given user.
@@ -11,62 +26,27 @@ class EventLoadServiceImpl extends DbServiceBase implements EventLoadService {
 	 * @return array(Event)
 	 */
 	public function listEvents(GeoUser $user) {
-		$stmt = $this->createEventQuery($user);
-		$result = array();
-		foreach ($this->db->query($stmt) as $row) {
-			$result []= $this->createEventDao($row);
-		}
-		return $result;
+		$onlyOpenRegistration = $this->eventAuthService->canListOnlyOpenRegistrationEvents($user);
+		return $this->eventLoadDaoService->listEvents($onlyOpenRegistration);
 	}
 	
 	/**
 	 * Loads the event by the given id.
 	 * If the current user cannot see the given event, throws an exception.
+	 * If no event exists with the given id, throws an exception.
 	 * 
 	 * @param GeoUser $user
 	 * @param integer $eventId
 	 * @return Event
-	 * @throws Exception
+	 * @throws DataAccessException
 	 */
 	public function load(GeoUser $user, $eventId) {
-		$stmt = $this->createEventQuery($user)->where('id=?', $eventId);
-		$row = $this->db->queryRow($stmt, true);
-		if (is_null($row)) {
-			throw new DataAccessException('the given event is closed now');
+		$event = $this->eventLoadDaoService->load($eventId);
+		if ($this->eventAuthService->canLoad($user, $event)) {
+			return $event;
 		} else {
-			return $this->createEventDao($row);
+			throw new DataAccessException('the given event is closed now');
 		}
-	}
-	
-	/**
-	 * Creates a query returing relevant events
-	 * 
-	 * @param GeoUser $user
-	 * @return QueryBuilder
-	 */
-	private function createEventQuery(GeoUser $user) {
-		$stmt = QueryBuilder::create()
-			->from('event')
-			->orderByDesc('event_date');
-		if (!$user->isAdmin()) {
-			$stmt->where('event_date >= CURRENT_DATE()');
-		}
-		return $stmt;
-	}
-	
-	/**
-	 * Creates an Event object from the given database row
-	 * 
-	 * @param array $eventData
-	 * @return Event
-	 */
-	private function createEventDao(array $eventData) {
-		return new Event(
-			$eventData['id'],
-			$eventData['name'],
-			Timestamp::parse($eventData['event_date']),
-			Timestamp::parse($eventData['registration_end']),
-			$eventData['international']);
 	}
 	
 }

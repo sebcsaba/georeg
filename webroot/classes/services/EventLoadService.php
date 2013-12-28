@@ -20,7 +20,7 @@ interface EventLoadService {
 	 * @param GeoUser $user
 	 * @param integer $eventId
 	 * @return Event
-	 * @throws Exception
+	 * @throws DataAccessException
 	 */
 	public function load(GeoUser $user, $eventId);
 	
