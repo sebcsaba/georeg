@@ -37,7 +37,7 @@ class ParticipantLoadDaoServiceImpl extends DaoServiceBase implements Participan
 			->where('id=?', $participantId);
 		$row = $this->db->queryRow($stmt, true);
 		if (is_null($row)) {
-			throw new DataAccessException('no such participant with the given id for the event');
+			throw new DaoException('no such participant with the given id for the event');
 		} else {
 			$participantPlayers = $this->createPlayerDaoListForParticipant($row['id']);
 			return $this->createParticipantDao($row, $event, $participantPlayers);

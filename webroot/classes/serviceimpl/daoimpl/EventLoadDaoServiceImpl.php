@@ -30,7 +30,7 @@ class EventLoadDaoServiceImpl extends DaoServiceBase implements EventLoadDaoServ
 		$stmt = $this->createEventQuery(false)->where('id=?', $eventId);
 		$row = $this->db->queryRow($stmt, true);
 		if (is_null($row)) {
-			throw new DataAccessException('the given event is closed now');
+			throw new DaoException('no such event for the given id');
 		} else {
 			return $this->createEventDao($row);
 		}

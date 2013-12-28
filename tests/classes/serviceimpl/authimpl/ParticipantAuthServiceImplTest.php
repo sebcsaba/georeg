@@ -2,18 +2,6 @@
 
 class ParticipantAuthServiceImplTest extends AuthServiceImplTestBase {
 	
-	private function createParticipantObject(Event $event, $startId = null) {
-		$players = array(
-			new Player(is_null($startId)?null:$startId++, 'Player One', null, null),
-			new Player(is_null($startId)?null:$startId++, 'Player Two', 'player@example.org', '+36305551234'),
-		);
-		return new Participant(is_null($startId)?null:$startId++,
-			$event, $players, $players[0], $players[1], $players[0],
-			12, 'Car type 42', 'ABC 123', 'hu', 1, null,
-			Timestamp::parse('2013-12-26 12:00:00')
-		);
-	}
-	
 	/**
 	 * @test
 	 */

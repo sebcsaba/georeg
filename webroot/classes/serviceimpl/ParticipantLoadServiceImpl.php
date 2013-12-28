@@ -26,7 +26,7 @@ class ParticipantLoadServiceImpl implements ParticipantLoadService {
 	 * @throws DataAccessException
 	 */
 	public function loadParticipants(GeoUser $user, Event $event) {
-		if (!$this->participantAuthService->canLoad($user, $participant)) {
+		if (!$this->participantAuthService->canLoadParticipants($user, $event)) {
 			throw new DataAccessException('cannot load participants for this event');
 		}
 		return $this->participantLoadDaoService->loadParticipants($event);

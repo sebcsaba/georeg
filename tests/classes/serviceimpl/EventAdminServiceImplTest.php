@@ -6,10 +6,19 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 */
 	public function createEventAsAdminUser() {
-		$testdata = array("INSERT INTO event ( name, event_date, registration_end, international )  VALUES ( 'geo3', '2030-12-31 00:00:00', '2030-12-30 00:00:00', 0 ) " => 3);
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventAdminServiceImpl($db);
-		$event = $this->createEvent($this->geo3);
+		$event = $this->createEventObject($this->geo3);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canCreateEvent')
+			->with($this->equalTo($this->userAdmin))
+			->will($this->returnValue(true));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->once())
+			->method('createEvent')
+			->with($this->equalTo($event))
+			->will($this->returnValue(3));
+		
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$id = $impl->createEvent($this->userAdmin, $event);
 		$this->assertEquals(3, $id);
 	}
@@ -19,10 +28,15 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @expectedException DataAccessException
 	 */
 	public function createEventAsNormalUser() {
-		$testdata = array();
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventAdminServiceImpl($db);
-		$event = $this->createEvent($this->geo3);
+		$event = $this->createEventObject($this->geo3);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canCreateEvent')
+			->with($this->equalTo($this->userNormal))
+			->will($this->returnValue(false));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->never())->method('createEvent');
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$impl->createEvent($this->userNormal, $event);
 	}
 	
@@ -30,10 +44,18 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 */
 	public function removeEventAsAdminUser() {
-		$testdata = array('DELETE FROM event WHERE (id=1)' => true);
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$event = $this->createEvent($this->geo1);
-		$impl = new EventAdminServiceImpl($db);
+		$event = $this->createEventObject($this->geo3);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canRemoveEvent')
+			->with($this->equalTo($this->userAdmin))
+			->will($this->returnValue(true));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->once())
+			->method('removeEvent')
+			->with($this->equalTo($event));
+		
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$impl->removeEvent($this->userAdmin, $event);
 	}
 	
@@ -42,10 +64,16 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @expectedException DataAccessException
 	 */
 	public function removeEventAsNormalUser() {
-		$testdata = array();
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$event = $this->createEvent($this->geo1);
-		$impl = new EventAdminServiceImpl($db);
+		$event = $this->createEventObject($this->geo3);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canRemoveEvent')
+			->with($this->equalTo($this->userNormal))
+			->will($this->returnValue(false));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->never())->method('removeEvent');
+		
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$impl->removeEvent($this->userNormal, $event);
 	}
 	
@@ -53,18 +81,23 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @test
 	 */
 	public function updateClosedRegistrationEventAsAdminUser() {
-		$testdata = array(
-			"SELECT event_date FROM event WHERE (id=2)"=>array(array('event_date'=>$this->geo2['event_date'])),
-			"UPDATE event SET name='geo2updated', event_date='2030-12-01 00:00:00', registration_end='2013-12-03 00:00:00', international=0 WHERE (id=2)" => true,
-		);
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$event = $this->createEvent($this->geo2);
+		$event = $this->createEventObject($this->geo2);
 		$newEvent = new Event($event->getId(),
 			$event->getName().'updated',
 			$event->getEventDate(),
 			$event->getRegistrationEnd(),
 			$event->getInternational());
-		$impl = new EventAdminServiceImpl($db);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canUpdateEvent')
+			->with($this->equalTo($this->userAdmin))
+			->will($this->returnValue(true));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->once())
+			->method('updateEvent')
+			->with($this->equalTo($newEvent));
+		
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$impl->updateEvent($this->userAdmin, $newEvent);
 	}
 	
@@ -73,33 +106,22 @@ class EventAdminServiceImplTest extends ServiceImplTestBase {
 	 * @expectedException DataAccessException
 	 */
 	public function updateClosedEventAsAdminUser() {
-		$testdata = array("SELECT event_date FROM event WHERE (id=1)"=>array(array('event_date'=>$this->geo1['event_date'])));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$event = $this->createEvent($this->geo1);
+		$event = $this->createEventObject($this->geo1);
 		$newEvent = new Event($event->getId(),
 			$event->getName().'updated',
 			$event->getEventDate(),
 			$event->getRegistrationEnd(),
 			$event->getInternational());
-		$impl = new EventAdminServiceImpl($db);
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canUpdateEvent')
+			->with($this->equalTo($this->userAdmin))
+			->will($this->returnValue(false));
+		$mockDao = $this->getMock('EventAdminDaoService');
+		$mockDao->expects($this->never())->method('updateEvent');
+		
+		$impl = new EventAdminServiceImpl($mockAuth, $mockDao);
 		$impl->updateEvent($this->userAdmin, $newEvent);
-	}
-	
-	/**
-	 * @test
-	 * @expectedException DataAccessException
-	 */
-	public function updateEventAsNormalUser() {
-		$testdata = array();
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$event = $this->createEvent($this->geo1);
-		$newEvent = new Event($event->getId(),
-			$event->getName().'updated',
-			$event->getEventDate(),
-			$event->getRegistrationEnd(),
-			$event->getInternational());
-		$impl = new EventAdminServiceImpl($db);
-		$impl->updateEvent($this->userNormal, $newEvent);
 	}
 	
 }

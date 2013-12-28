@@ -39,7 +39,7 @@ class EventLoadDaoServiceImplTest extends DaoServiceImplTestBase {
 	
 	/**
 	 * @test
-	 * @expectedException DataAccessException
+	 * @expectedException DaoException
 	 */
 	public function loadNonExistentEvent() {
 		$testdata = array('SELECT * FROM event WHERE (id=42) ORDER BY event_date DESC'=>array());

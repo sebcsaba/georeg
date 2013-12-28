@@ -5,45 +5,61 @@ class EventLoadServiceImplTest extends ServiceImplTestBase {
 	/**
 	 * @test
 	 */
-	public function listEventsForAdminUser() {
-		$testdata = array('SELECT * FROM event ORDER BY event_date DESC'=>array($this->geo1, $this->geo2, $this->geo3));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
+	public function listAllEvents() {
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canListOnlyOpenRegistrationEvents')
+			->with($this->equalTo($this->userAdmin))
+			->will($this->returnValue(false));
+		$mockDao = $this->getMock('EventLoadDaoService');
+		$mockResponse = new stdClass();
+		$mockDao->expects($this->once())
+			->method('listEvents')
+			->with(false)
+			->will($this->returnValue($mockResponse));
+		$impl = new EventLoadServiceImpl($mockAuth, $mockDao);
 		$events = $impl->listEvents($this->userAdmin);
-		$this->assertEquals(3, count($events));
+		$this->assertSame($mockResponse, $events);
 	}
 	
 	/**
 	 * @test
 	 */
-	public function listEventsForNonAdminUser() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) ORDER BY event_date DESC'=>array($this->geo2, $this->geo3));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
+	public function listFilteredEvents() {
+		$mockAuth = $this->getMock('EventAuthService');
+		$mockAuth->expects($this->once())
+			->method('canListOnlyOpenRegistrationEvents')
+			->with($this->equalTo($this->userNormal))
+			->will($this->returnValue(true));
+		$mockDao = $this->getMock('EventLoadDaoService');
+		$mockResponse = new stdClass();
+		$mockDao->expects($this->once())
+			->method('listEvents')
+			->with(true)
+			->will($this->returnValue($mockResponse));
+		$impl = new EventLoadServiceImpl($mockAuth, $mockDao);
 		$events = $impl->listEvents($this->userNormal);
-		$this->assertEquals(2, count($events));
+		$this->assertSame($mockResponse, $events);
 	}
 	
 	/**
 	 * @test
 	 */
-	public function loadOpenRegistrationEventAsNormalUser() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=3) ORDER BY event_date DESC'=>array($this->geo3));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
+	public function loadOpenEvent() {
+		$mockAuth = $this->getMock('EventAuthService');
+ 		$mockAuth->expects($this->once())
+ 			->method('canLoad')
+ 			->with($this->equalTo($this->userNormal))
+ 			->will($this->returnValue(true));
+		$mockDao = $this->getMock('EventLoadDaoService');
+ 		$mockResponse = $this->createEventObject($this->geo3);
+ 		$mockDao->expects($this->once())
+ 			->method('load')
+ 			->with(3)
+ 			->will($this->returnValue($mockResponse));
+		$impl = new EventLoadServiceImpl($mockAuth, $mockDao);
 		$event = $impl->load($this->userNormal, 3);
-		$this->assertEquals('geo3', $event->getName());
-	}
-	
-	/**
-	 * @test
-	 */
-	public function loadClosedRegistrationEventAsNormalUser() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=2) ORDER BY event_date DESC'=>array($this->geo2));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
-		$event = $impl->load($this->userNormal, 2);
-		$this->assertEquals('geo2', $event->getName());
+		$this->assertSame($mockResponse, $event);
 	}
 	
 	/**
@@ -51,31 +67,36 @@ class EventLoadServiceImplTest extends ServiceImplTestBase {
 	 * @expectedException DataAccessException
 	 */
 	public function loadClosedEventAsNormalUser() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=1) ORDER BY event_date DESC'=>array());
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
+		$mockAuth = $this->getMock('EventAuthService');
+ 		$mockAuth->expects($this->once())
+ 			->method('canLoad')
+ 			->with($this->equalTo($this->userNormal))
+ 			->will($this->returnValue(false));
+		$mockDao = $this->getMock('EventLoadDaoService');
+		$mockResponse = $this->createEventObject($this->geo1);
+ 		$mockDao->expects($this->once())
+ 			->method('load')
+ 			->with(1)
+ 			->will($this->returnValue($mockResponse));
+		$impl = new EventLoadServiceImpl($mockAuth, $mockDao);
 		$impl->load($this->userNormal, 1);
 	}
 	
 	/**
 	 * @test
-	 */
-	public function loadClosedEventAsAdminUser() {
-		$testdata = array('SELECT * FROM event WHERE (id=1) ORDER BY event_date DESC'=>array($this->geo1));
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
-		$event = $impl->load($this->userAdmin, 1);
-		$this->assertEquals('geo1', $event->getName());
-	}
-	
-	/**
-	 * @test
-	 * @expectedException DataAccessException
+	 * @expectedException DaoException
 	 */
 	public function loadNonExistentEvent() {
-		$testdata = array('SELECT * FROM event WHERE (event_date >= CURRENT_DATE()) AND (id=42) ORDER BY event_date DESC'=>array());
-		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new EventLoadServiceImpl($db);
+		$mockAuth = $this->getMock('EventAuthService');
+ 		$mockAuth->expects($this->never())
+ 			->method('canLoad');
+		$mockDao = $this->getMock('EventLoadDaoService');
+ 		$mockResponse = $this->createEventObject($this->geo1);
+ 		$mockDao->expects($this->once())
+ 			->method('load')
+ 			->with(42)
+ 			->will($this->throwException(new DaoException('no such id')));
+		$impl = new EventLoadServiceImpl($mockAuth, $mockDao);
 		$impl->load($this->userNormal, 42);
 	}
 	

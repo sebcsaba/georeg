@@ -28,7 +28,7 @@ class ParticipantAdminServiceImpl implements ParticipantAdminService {
 	 * @throws DataAccessException
 	 */
 	public function createParticipant(GeoUser $user, Participant $participant) {
-		if (!$this->participantAuthService->canCreateParticipant($user, $event)) {
+		if (!$this->participantAuthService->canCreateParticipant($user, $participant->getEvent())) {
 			throw new DataAccessException('cannot create participant');
 		}
 		return $this->participantAdminDaoService->createParticipant($participant);

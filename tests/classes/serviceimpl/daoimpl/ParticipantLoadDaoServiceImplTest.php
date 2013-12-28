@@ -62,7 +62,7 @@ class ParticipantLoadDaoServiceImplTest extends DaoServiceImplTestBase {
 			"SELECT * FROM player WHERE (fk_participant=2)" => array($this->player10, $this->player11),
 		);
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new ParticipantLoadServiceImpl($db);
+		$impl = new ParticipantLoadDaoServiceImpl($db);
 		
 		$event = $this->createEventObject($this->geo1);
 		$participant = $impl->load($event, 2);
@@ -70,14 +70,14 @@ class ParticipantLoadDaoServiceImplTest extends DaoServiceImplTestBase {
 	
 	/**
 	 * @test
-	 * @expectedException DataAccessException
+	 * @expectedException DaoException
 	 */
 	public function loadNonexistentParticipantForEvent() {
 		$testdata = array(
 			"SELECT * FROM participant WHERE (fk_event=1) AND (id=13)" => array()
 		);
 		$db = TestDbEngine::createDatabase($this, $testdata);
-		$impl = new ParticipantLoadServiceImpl($db);
+		$impl = new ParticipantLoadDaoServiceImpl($db);
 		
 		$event = $this->createEventObject($this->geo1);
 		$impl->load($event, 13);
