@@ -31,6 +31,7 @@ return config_merge(array(
 		'nonsingletons' => array(
 		),
 		'specials' => array(
+			'TranslationHandler' => new TranslationHandlerDIHandler(),
 			'Database' => new DatabaseDIHandler(),
 		),
 	),
@@ -38,6 +39,12 @@ return config_merge(array(
 	'messages' => array(
 		'title.error' => 'Sorry.',
 		'general.error' => 'An error occured. Please contact the site administrator!',
+	),
+	
+	'language' => array(
+		'enabled' => true,
+		'installed' => array('hu','en'),
+		'default' => 'hu',
 	),
 	
 	'default.error.page' => 'default.error',

@@ -1,0 +1,6 @@
+left.new_event=Új verseny
+left.events_list=Versenyek:
+form.event.name=Név
+form.event.eventDate=Dátum
+form.event.registrationEnd=Nevezési határidő
+form.event.international=Nemzetközi

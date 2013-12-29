@@ -5,3 +5,4 @@ RedirectMatch 404 abavee
 RedirectMatch 404 classes
 RedirectMatch 404 config
 RedirectMatch 404 pages
+RedirectMatch 404 translations

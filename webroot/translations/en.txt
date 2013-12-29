@@ -1,0 +1,6 @@
+left.new_event=New competition
+left.events_list=Competitions:
+form.event.name=Name
+form.event.eventDate=Date
+form.event.registrationEnd=Registration deadline
+form.event.international=International
