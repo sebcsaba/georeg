@@ -1,6 +1,9 @@
 <?php $event = $request->getData('event'); ?>
 <div class="eventData">
 	<h1><?h($event->getName())?></h1>
+	<?php if ($request->getData('canModifyEvent')) { ?>
+		<a href="javascript:openPage('ModifyEvent',{id:<?h($event->getId())?>});"><?h($t('event.application.form.modify'))?></a>
+	<?php } ?>
 	<h2><?h($event->getEventDate()->toDayString())?></h2>
 	
 	<?php if ($event->isRegistrationOpen()) { ?>

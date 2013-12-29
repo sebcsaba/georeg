@@ -8,3 +8,4 @@ event.application.form.registrationClosed=A regisztráció lezárult.
 event.application.form.registrationDeadline=Regisztrációs határidő:
 event.application.form.internationalEvent=Ez egy nemzetközi verseny.
 event.application.form.noParticipant=Még nincs nevező
+event.application.form.modify=Módosítás
