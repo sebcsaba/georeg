@@ -4,3 +4,7 @@ form.event.name=Név
 form.event.eventDate=Dátum
 form.event.registrationEnd=Nevezési határidő
 form.event.international=Nemzetközi
+event.application.form.registrationClosed=A regisztráció lezárult.
+event.application.form.registrationDeadline=Regisztrációs határidő:
+event.application.form.internationalEvent=Ez egy nemzetközi verseny.
+event.application.form.noParticipant=Még nincs nevező

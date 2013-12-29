@@ -4,3 +4,7 @@ form.event.name=Name
 form.event.eventDate=Date
 form.event.registrationEnd=Registration deadline
 form.event.international=International
+event.application.form.registrationClosed=Registration is closed.
+event.application.form.registrationDeadline=Registration deadline:
+event.application.form.internationalEvent=This is an international event.
+event.application.form.noParticipant=No participant yet.
