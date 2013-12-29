@@ -9,9 +9,9 @@ CREATE TABLE event (
 CREATE TABLE participant (
 	id INT PRIMARY KEY NOT NULL auto_increment,
 	fk_event INT NOT NULL REFERENCES event(id) ON DELETE CASCADE,
-	fk_driver INT NOT NULL,
-	fk_navigator INT NOT NULL,
-	fk_technical_driver INT NOT NULL,
+	fk_driver INT NULL,
+	fk_navigator INT NULL,
+	fk_technical_driver INT NULL,
 	reg_number INT NULL,
 	car_type VARCHAR(2000) NULL,
 	car_reg_number VARCHAR(2000) NULL,
