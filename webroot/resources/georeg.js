@@ -18,6 +18,10 @@ function myAjax(data, realSuccess, method) {
 				alert(decodeString(xhr.getResponseHeader("X-Error")));
 			} else {
 				realSuccess(data);
+				var callJsFunction = xhr.getResponseHeader("X-Call-Javascript");
+				if (callJsFunction) {
+					eval(decodeString(callJsFunction)+'()');
+				}
 			}
 		},
 		error: function(xhr, textStatus, errorThrown) {
