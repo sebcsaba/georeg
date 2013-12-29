@@ -229,4 +229,19 @@ class Participant {
 		return $this->date;
 	}
 	
+	/**
+	 * Returns the name of all players but driver and navigator
+	 * 
+	 * @return array of string
+	 */
+	public function getOtherPlayersName() {
+		$result = array();
+		foreach ($this->players as $player) {
+			if ($player !== $this->getDriver() && $player !== $this->getNavigator()) {
+				$result []= $player->getName();
+			}
+		}
+		return $result;
+	}
+	
 }

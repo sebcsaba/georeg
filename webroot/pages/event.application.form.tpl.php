@@ -22,8 +22,7 @@
 <?php } ?>
 
 <?php if (count($request->getData('participants'))) { ?>
-	<?php foreach ($request->getData('participants') as $participant) { ?>
-	<?php } ?>
+	<?php require_once('participant.list.tpl.php');?>
 <?php } else { ?>
 	<div><?h($t('event.application.form.noParticipant'))?></div>
 <?php } ?>
