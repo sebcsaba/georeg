@@ -17,6 +17,10 @@
 	<?php } ?>
 </div>
 
+<?php if ($event->isRegistrationOpen()) { ?>
+	<?php require_once('participant.form.tpl.php');?>
+<?php } ?>
+
 <?php if (count($request->getData('participants'))) { ?>
 	<?php foreach ($request->getData('participants') as $participant) { ?>
 	<?php } ?>
