@@ -1,11 +1,14 @@
+general.save=Save
+general.modify=Modify
+general.delete=Delete
 left.new_event=New competition
 left.events_list=Competitions:
 form.event.name=Name
 form.event.eventDate=Date
 form.event.registrationEnd=Registration deadline
 form.event.international=International
+form.event.deleteConfirm=Do you really want to delete this event?
 event.application.form.registrationClosed=Registration is closed.
 event.application.form.registrationDeadline=Registration deadline:
 event.application.form.internationalEvent=This is an international event.
 event.application.form.noParticipant=No participant yet.
-event.application.form.modify=Modify

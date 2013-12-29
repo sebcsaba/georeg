@@ -2,7 +2,7 @@
 <div><?h($request->getData('title'))?></div>
 <form method="post" onsubmit="submitForm($(this));return false;">
 	<input type="hidden" name="do" value="SaveEvent"/>
-	<input type="hidden" name="id" value="<?h($event->getId())?>"/>
+	<input type="hidden" id="f_id" name="id" value="<?h($event->getId())?>"/>
 	
 	<div>
 		<label for="f_name"><?h($t('form.event.name'))?></label>
@@ -27,7 +27,8 @@
 	</div>
 	
 	<div>
-		<input type="submit"/>
+		<input type="submit" value="<?h($t('general.save'))?>"/>
+		<a href="javascript:deleteEvent();"><?h($t('general.delete'))?></a>
 	</div>
 	
 </form>
@@ -35,4 +36,13 @@
 <script type="text/javascript">
 $('#f_eventDate').datepicker({dateFormat:'yy-mm-dd'});
 $('#f_registrationEnd').datepicker({dateFormat:'yy-mm-dd'});
+
+function deleteEvent() {
+	var confirmText = <?=json_encode($t('form.event.deleteConfirm'))?>;
+	var id = $('#f_id').val();
+	var name = $('#f_name').attr('value');
+	if (confirm(confirmText+' '+name)) {
+		openPageData({'do':'DeleteEvent','id':id});
+	}
+}
 </script>
