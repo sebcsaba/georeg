@@ -4,8 +4,17 @@ return config_merge(array(
 
 	'lifecycle' => 'unknown', // values: production, development, test
 	
+	'db' => array(
+		'protocol' => 'mysql',
+	),
+	
 	'di' => array(
 		'impl' => array(
+			'AuthenticationService' => 'GeoRegAuthenticationServiceImpl',
+			'ApplicationHandler' => 'NormalApplicationHandlerImpl',
+			'DbDialect' => 'MySqlDbDialect',
+			'DbEngine' => 'MySqlDbEngine',
+			
 			'EventLoadService' => 'EventLoadServiceImpl',
 			'EventAdminService' => 'EventAdminServiceImpl',
 			'ParticipantAdminService' => 'ParticipantAdminServiceImpl',
