@@ -23,7 +23,7 @@ class ShowEventAction implements Action {
 		$participants = $this->participantLoadService->loadParticipants($request->getUser(), $event);
 		$request->setData('event', $event);
 		$request->setData('participants', $participants);
-		return new PageForward('event.application.form');
+		return new PageForward('event.application.form', $request->get('response-call-javascript'));
 	}
 	
 }

@@ -51,8 +51,8 @@ function submitForm(form) {
 	},'post');
 }
 
-function reloadLeftMenu(){
-	myAjax({'do':'ShowLeftMenu'},function(data){
+function reloadLeftMenu() {
+	myAjax({'do':'ReloadLeftMenu'},function(data){
 		$('#leftmenu').html(data);
 	});
 }

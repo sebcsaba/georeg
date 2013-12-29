@@ -25,6 +25,7 @@ class SaveEventAction implements Action {
 			$id = $event->getId();
 		}
 		$request->set('id', $id);
+		$request->set('response-call-javascript', 'reloadLeftMenu');
 		return new ActionForward('ShowEventAction');
 	}
 	
