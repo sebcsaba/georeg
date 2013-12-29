@@ -1,0 +1,7 @@
+DirectoryIndex index.php
+Options -Indexes
+RewriteEngine On
+RedirectMatch 404 abavee
+RedirectMatch 404 classes
+RedirectMatch 404 config
+RedirectMatch 404 pages

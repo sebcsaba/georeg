@@ -1,0 +1,10 @@
+#leftmenu {
+	width: 150px;
+	float: left;
+	margin-right: 50px;
+	border-right: 1px solid gray;
+}
+#maincontent {
+	width: 600px;
+	float: left;
+}

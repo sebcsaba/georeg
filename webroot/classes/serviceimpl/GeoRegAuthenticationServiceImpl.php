@@ -3,7 +3,7 @@
 class GeoRegAuthenticationServiceImpl implements AuthenticationService {
 	
 	public function authenticate() {
-		return null;
+		return new GeoUser(null, 'anonymous', true);
 	}
 	
 }
