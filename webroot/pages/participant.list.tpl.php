@@ -12,7 +12,7 @@
 		<tr>
 			<td><?h($participant->getRegNumber())?></td>
 			<?php if ($event->getInternational()) { ?>
-				<td><?h($participant->getCountry())?></td>
+				<td><img src="resources/flags/<?h($participant->getCountry())?>.png"/></td>
 			<?php } ?>
 			<td><?h($participant->getDriver()->getName())?></td>
 			<td><?php if ($participant->getDriver() !== $participant->getNavigator()) {

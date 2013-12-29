@@ -36,7 +36,17 @@
 	<?php if ($event->getInternational()) { ?>
 		<div>
 			<label for="f_country"><?h($t('participant.form.country'))?></label>
-			<input type="text" id="f_country" name="country" value=""/>
+			<select id="f_country" name="country">
+				<?php
+					foreach ($config->get('application/countries') as $code) {
+						$selected = '';
+						if ($config->get('application/default_country') == $code) {
+							$selected = 'selected="selected"';
+						}
+				?>
+					<option <?=$selected?> value="<?h($code)?>"><?h($t('country.'.$code))?></option>
+				<?php } ?>
+			</select>
 		</div>
 		<div>
 			<label for="f_additional_guests"><?h($t('participant.form.additional_guests'))?></label>

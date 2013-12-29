@@ -3,6 +3,11 @@
 class SaveParticipantAction implements Action {
 	
 	/**
+	 * @var Config
+	 */
+	private $config;
+	
+	/**
 	 * @var EventLoadService
 	 */
 	private $eventLoadService;
@@ -12,7 +17,11 @@ class SaveParticipantAction implements Action {
 	 */
 	private $participantAdminService;
 	
-	public function __construct(EventLoadService $eventLoadService, ParticipantAdminService $participantAdminService) {
+	public function __construct(
+			Config $config,
+			EventLoadService $eventLoadService,
+			ParticipantAdminService $participantAdminService) {
+		$this->config = $config;
 		$this->eventLoadService = $eventLoadService;
 		$this->participantAdminService = $participantAdminService;
 	}
@@ -43,7 +52,7 @@ class SaveParticipantAction implements Action {
 		$eventId = $request->get('event_id');
 		$event = $this->eventLoadService->load($request->getUser(), $eventId);
 		if ($event->getInternational()) {
-			if (2!=strlen($request->get('country'))) throw new ValidationException('Hibás országkód!');
+			if (!in_array($request->get('country'), $this->config->get('application/countries'))) throw new ValidationException('Hibás országkód!');
 		}
 	}
 	
@@ -69,7 +78,7 @@ class SaveParticipantAction implements Action {
 			$country = $request->get('country');
 			$additionalGuests = (int)$request->get('additional_guests');
 		} else {
-			$country = 'hu';
+			$country = $this->config->get('application/default_country');
 			$additionalGuests = 0;
 		}
 		

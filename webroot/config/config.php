@@ -48,5 +48,10 @@ return config_merge(array(
 	),
 	
 	'default.error.page' => 'default.error',
+	
+	'application' => array(
+		'countries' => array('hu','sk','ro','pl','cz'),
+		'default_country' => 'hu'
+	),
 
 ),require_once('config.local.php'));
